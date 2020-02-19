@@ -5,6 +5,7 @@ import Axios from "axios";
 import VideoDetail from "../components/video-detail";
 import Video from "../components/video";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "../style/style.css";
 
 const POPUlAR_MOVIES_URL =
   "discover/movie?language=fr&sort_by=popularity.desc&include_adult=false&append_to_response=images";
@@ -38,22 +39,28 @@ class App extends Component {
 
   applyVideoToCurrentMovie() {
     Axios.get(
-      `${API_END_POINT}movie/${this.state.currentMovie.id}?${API_KEY}&append_to_response=videos&include_adult=true`
+      `${API_END_POINT}movie/${this.state.currentMovie.id}?${API_KEY}&append_to_response=videos&include_adult=false`
     ).then(
       function(response) {
         const youtubeKey = response.data.videos.results[0].key;
         let newCurrentMovieState = this.state.currentMovie;
         newCurrentMovieState.videoId = youtubeKey;
-        this.setState({ currentMovie: newCurrentMovieState });
-        console.log(this.state.currentMovie)
+        this.setState({ currentMovie: newCurrentMovieState });       
  
       }.bind(this)
     );
   }
+
+  onClickListItem(movie){
+    this.setState({currentMovie : movie}, function(){
+      this.applyVideoToCurrentMovie();
+    })
+    
+  }
   render() {
     const renderVideoList = () => {
       if (this.state.movieList.length >= 5) {
-        return <VideoList movieList={this.state.movieList} />;
+        return <VideoList movieList={this.state.movieList} callback={this.onClickListItem.bind(this)}  />;
       }
     };
     return (
@@ -63,7 +70,7 @@ class App extends Component {
         </div>
         <div className="row">
           <div className="col-md-8">
-              
+            {console.log(this.state)}
             <Video videoId={this.state.currentMovie.videoId} />
             <VideoDetail
               title={this.state.currentMovie.title}

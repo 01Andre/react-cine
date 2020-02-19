@@ -14,7 +14,8 @@ const VideoList = (props) => {
   );
 
   function receiveCallBack(movie){
-props.callback();
+props.callback(movie);
+
   }
 };
 
